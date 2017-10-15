@@ -16,22 +16,16 @@ puzzle_solution(Puzzle) :-
 	
 
 valid(Puzzle) :-
-	Puzzle = [ _ , First, Second],
-	First = [ Fhead | Frest],
-	Frest ins 1..9,
-	all_distinct(Frest),
-	Frest = [F1,F2],
-	((Fhead #= F1 * F2) #/\ (Fhead #\= F1 + F2) ) #\ ( (Fhead #= F1 + F2) #/\ (Fhead #\= F1 * F2)),
-	Second = [ Shead | Srest],
-	Srest ins 1..9,
-	all_distinct(Srest),
-	Srest = [S1,S2],
-	((Shead #= S1 * S2) #/\ (Shead #\= S1 + S2)) #\ ((Shead #= S1 + S2) #/\ (Shead #\= S1 * S2)),
-	F1 #= S2,
-	label(Frest),
-	label(Srest).
+	Puzzle = [ _ | Rows],
+	maplist(validate, Rows).
 
-
+validate(Row) :-
+	Row = [ Head | Rest],
+	Rest ins 1..9,
+	all_distinct(Rest),
+	Rest = [V1,V2],
+	((Head #= V1 * V2) #/\ (Head #\= V1 + V2) ) #\ ( (Head #= V1 + V2) #/\ (Head #\= V1 * V2)),
+	label(Rest).
 
 
 
