@@ -6,6 +6,7 @@
 % Purpose  : Return puzzle solution for each test run by proj2_test.pl
 
 :- ensure_loaded(library(clpfd)).
+:- ensure_loaded(library(clpb)).
 
 puzzle([[0,45,72],[72,_,_],[14,_,_]]).
 
@@ -13,22 +14,35 @@ puzzle_solution(Puzzle) :-
 	valid(Puzzle),
 	transpose(Puzzle, TransposePuzzle),
 	valid(TransposePuzzle).
-	
 
 valid(Puzzle) :-
 	Puzzle = [ _ | Rows],
+	match_diagonal(Rows),
 	maplist(validate, Rows).
 
 validate(Row) :-
 	Row = [ Head | Rest],
 	Rest ins 1..9,
 	all_distinct(Rest),
-	Rest = [V1,V2],
-	((Head #= V1 * V2) #/\ (Head #\= V1 + V2) ) #\ ( (Head #= V1 + V2) #/\ (Head #\= V1 * V2)),
-	label(Rest).
+	label(Rest),
+	sum_or_prod(Rest, Head).
 
+sum_or_prod(Rest, Head) :-
+	sumlist(Rest, Hsum),
+	productlist(Rest, Hprod),
+	(Hsum #= Head) #\/ (Hprod #= Head).
 
+match_diagonal(Rows) :-
+	Rows = [First | Rest ],
+	First = [ _, Diagonal | _ ],
+	match_diagonal(Rest, Diagonal, 2).
 
+match_diagonal([],_,_).
+match_diagonal([Row | Rows], Diagonal, Index) :-
+	nth0(Index, Row, Elem, _),
+	Elem #= Diagonal,
+	Index1 is Index + 1,
+	match_diagonal(Rows, Diagonal, Index1).
 
 
 all_same(List) :-
@@ -57,12 +71,5 @@ productlist([N|Ns], Prod0, Prod) :-
 	Prod1 is Prod0 * N,
 	productlist(Ns, Prod1, Prod).
 
-primeNumber(2).
-primeNumber(A) :-
-    A > 2,
-    \+ 0 is A mod 2,
-    L is floor(sqrt(A) / 2),
-    \+ (between(1, L, X),
-        0 is A mod (1 + 2*X)).
 
 	
