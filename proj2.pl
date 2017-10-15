@@ -18,16 +18,23 @@ puzzle_solution(Puzzle) :-
 valid(Puzzle) :-
 	Puzzle = [ _ , First, Second],
 	First = [ Fhead | Frest],
-	Second = [ Shead | Srest],
 	Frest ins 1..9,
-	Srest ins 1..9,
 	all_distinct(Frest),
-	all_distinct(Srest),
 	Frest = [F1,F2],
+	((Fhead #= F1 * F2) #/\ (Fhead #\= F1 + F2) ) #\ ( (Fhead #= F1 + F2) #/\ (Fhead #\= F1 * F2)),
+	Second = [ Shead | Srest],
+	Srest ins 1..9,
+	all_distinct(Srest),
 	Srest = [S1,S2],
+	((Shead #= S1 * S2) #/\ (Shead #\= S1 + S2)) #\ ((Shead #= S1 + S2) #/\ (Shead #\= S1 * S2)),
 	F1 #= S2,
-	((Fhead #= F1 * F2) #\/ (Fhead #= F1 + F2)),
-	((Shead #= S1 * S2) #\/ (Shead #= S1 + S2)).
+	label(Frest),
+	label(Srest).
+
+
+
+
+
 
 
 all_same(List) :-
@@ -37,6 +44,9 @@ listof(_, []).
 listof(Elt, [Elt|List]) :-
 	listof(Elt, List).
 
+
+
+
 sumlist(List, Sum) :-
 	sumlist(List, 0, Sum).
 
@@ -44,5 +54,21 @@ sumlist([], Sum, Sum).
 sumlist([N|Ns], Sum0, Sum) :-
 	Sum1 is Sum0 + N,
 	sumlist(Ns, Sum1, Sum).
+
+productlist(List, Prod) :-
+	productlist(List, 1, Prod).
+
+productlist([], Prod, Prod).
+productlist([N|Ns], Prod0, Prod) :-
+	Prod1 is Prod0 * N,
+	productlist(Ns, Prod1, Prod).
+
+primeNumber(2).
+primeNumber(A) :-
+    A > 2,
+    \+ 0 is A mod 2,
+    L is floor(sqrt(A) / 2),
+    \+ (between(1, L, X),
+        0 is A mod (1 + 2*X)).
 
 	
