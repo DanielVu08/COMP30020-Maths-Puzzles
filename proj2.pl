@@ -106,7 +106,7 @@ label_non_ground_rows(Puzzle) :-
 	maplist(sum_or_prod, NonGroundRows).
 
 /*
-* Holds true if a Row have at least one Ground item, False otherwise
+* Holds true if a Row have at least one Ground item
 */
 has_ground(Row) :-
 	Row = [ _ | Rest],
@@ -126,7 +126,6 @@ has_ground(Row) :-
 */
 sum_or_prod(Row) :-
 	Row = [ Head | Rest],
-	%exclude(ground, Rest, NonGrounds),
 	label(Rest),
 	sum_or_prod(Rest, Head).
 
