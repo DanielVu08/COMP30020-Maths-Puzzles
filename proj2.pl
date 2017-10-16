@@ -11,26 +11,60 @@
 puzzle([[0,45,72],[72,_,_],[14,_,_]]).
 
 puzzle_solution(Puzzle) :-
-	valid(Puzzle),
 	transpose(Puzzle, TransposePuzzle),
-	valid(TransposePuzzle).
+	valid(Puzzle),
+	valid(TransposePuzzle),
+	label_diagonal(Puzzle),
+	label_rows(Puzzle),
+	label_rows(TransposePuzzle).
+	%label_ground_rows(Puzzle),
+	%label_non_ground_rows(Puzzle),
+	%label_ground_rows(TransposePuzzle),
+	%label_non_ground_rows(TransposePuzzle).
+
 
 valid(Puzzle) :-
 	Puzzle = [ _ | Rows],
 	match_diagonal(Rows),
 	maplist(validate, Rows).
+	
+
+label_ground_rows(Puzzle) :-
+	Puzzle = [ _ | Rows],
+	include(has_round, Rows, GroundRows).
+	maplist(sum_or_prod, GroundRows).
+
+label_non_ground_rows(Puzzle) :-
+	Puzzle = [ _ | Rows],
+	exclude(has_round, Rows, NonGroundRows).
+	maplist(sum_or_prod, NonGroundRows).
+
+label_rows(Puzzle) :-
+	Puzzle = [ _ | Rows],
+	maplist(sum_or_prod, Rows).
+
+has_round(Row) :-
+	Row = [ _ | Rest],
+	include(ground, Rest, GroundList),
+	length(GroundList, Len),
+	Len #> 0.
+
 
 validate(Row) :-
-	Row = [ Head | Rest],
+	Row = [ _ | Rest],
 	Rest ins 1..9,
-	all_distinct(Rest),
+	all_distinct(Rest).
+
+sum_or_prod(Row) :-
+	Row = [ Head | Rest],
 	label(Rest),
 	sum_or_prod(Rest, Head).
 
 sum_or_prod(Rest, Head) :-
 	sumlist(Rest, Hsum),
 	productlist(Rest, Hprod),
-	(Hsum #= Head) #\/ (Hprod #= Head).
+	(Hsum #= Head) #\ (Hprod #= Head).
+
 
 match_diagonal(Rows) :-
 	Rows = [First | Rest ],
@@ -45,14 +79,11 @@ match_diagonal([Row | Rows], Diagonal, Index) :-
 	match_diagonal(Rows, Diagonal, Index1).
 
 
-all_same(List) :-
-	listof(_, List).
-
-listof(_, []).
-listof(Elt, [Elt|List]) :-
-	listof(Elt, List).
-
-
+label_diagonal(Puzzle) :-
+	Puzzle = [ _ | Rows],
+	Rows = [First | _ ],
+	First = [ _, Diagonal | _ ],
+	label([Diagonal]).
 
 
 sumlist(List, Sum) :-
