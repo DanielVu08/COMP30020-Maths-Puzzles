@@ -12,15 +12,19 @@ puzzle([[0,45,72],[72,_,_],[14,_,_]]).
 
 puzzle_solution(Puzzle) :-
 	transpose(Puzzle, TransposePuzzle),
+	
 	valid(Puzzle),
 	valid(TransposePuzzle),
+
 	label_diagonal(Puzzle),
-	label_rows(Puzzle),
-	label_rows(TransposePuzzle).
-	%label_ground_rows(Puzzle),
-	%label_non_ground_rows(Puzzle),
-	%label_ground_rows(TransposePuzzle),
-	%label_non_ground_rows(TransposePuzzle).
+	
+	%label_rows(Puzzle),
+	%label_rows(TransposePuzzle).
+	
+	label_ground_rows(Puzzle),
+	label_ground_rows(TransposePuzzle),
+	label_non_ground_rows(Puzzle),
+	label_non_ground_rows(TransposePuzzle).
 
 
 valid(Puzzle) :-
@@ -31,12 +35,12 @@ valid(Puzzle) :-
 
 label_ground_rows(Puzzle) :-
 	Puzzle = [ _ | Rows],
-	include(has_round, Rows, GroundRows).
+	include(has_round, Rows, GroundRows),
 	maplist(sum_or_prod, GroundRows).
 
 label_non_ground_rows(Puzzle) :-
 	Puzzle = [ _ | Rows],
-	exclude(has_round, Rows, NonGroundRows).
+	exclude(has_round, Rows, NonGroundRows),
 	maplist(sum_or_prod, NonGroundRows).
 
 label_rows(Puzzle) :-
@@ -83,7 +87,8 @@ label_diagonal(Puzzle) :-
 	Puzzle = [ _ | Rows],
 	Rows = [First | _ ],
 	First = [ _, Diagonal | _ ],
-	label([Diagonal]).
+	label([Diagonal]),
+	match_diagonal(Rows).
 
 
 sumlist(List, Sum) :-
